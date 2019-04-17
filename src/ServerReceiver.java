@@ -3,28 +3,29 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.sql.SQLException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServerReceiver {
 
     private final static int port = 1488;
     private DatagramSocket socket;
-    private CollectionPlace collection;
+    private SQLWorker collection;
     private  byte[] buffer;
-    private Users users;
+    private TokenFactory tokenFactory;
+    private RegistrationTokenFactory registrationTokenFactory;
+    private SenderMails senderMails;
 
-    public ServerReceiver() throws SocketException{
+    public ServerReceiver() throws SocketException, SQLException, ClassNotFoundException {
         socket = new DatagramSocket(port);
-        try {
-            collection = new CollectionPlace(ServerReaderSaver.justReadFile());
-        } catch (FileNotFoundException e) {
-            collection = new CollectionPlace(new CopyOnWriteArrayList<>());
-        }
-        users = new Users(socket, collection);
+        collection = new SQLWorker();
+        tokenFactory = new TokenFactory(socket);
+        registrationTokenFactory = new RegistrationTokenFactory();
+        senderMails = new SenderMails();
     }
 
     private void shootDown(){
-        Runtime.getRuntime().addShutdownHook(users);
+        Runtime.getRuntime().addShutdownHook(new Thread(()->tokenFactory.sendToEvery("===\nСервер отключился", "DISCONNECTION")));
     }
 
     public void work() {
@@ -35,7 +36,7 @@ public class ServerReceiver {
             try {
                 socket.receive(incoming);
                 System.out.println("Получено сообщение");
-                new Executor(incoming, collection, users, buffer).start();
+                new Executor(senderMails, incoming, collection, buffer, tokenFactory, registrationTokenFactory).start();
             } catch (IOException e) {
                 System.out.println("===\nОшбика получения пакета");
             }

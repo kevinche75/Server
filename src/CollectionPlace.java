@@ -43,16 +43,9 @@ public class CollectionPlace {
     /**This method shows elements in collection.
      */
     protected String show(){
-        if(reverse.get()){
             collection.sort((Comparator<Alice>) (o1, o2) -> {
-                return o1.getName().compareTo(o2.getName()) ;
-            });
-        } else {
-            collection.sort((Comparator<Alice>) (o1, o2) -> {
-                return o1.getName().compareTo(o2.getName()) ;
-            });
-            Collections.reverse(collection);
-        }
+                        return o1.getName().compareTo(o2.getName());
+                    });
         return "===\n"+collection;
     }
     /**This method add new element in collection.
