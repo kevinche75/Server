@@ -6,10 +6,8 @@ import java.util.Properties;
 
 public class SenderMails {
 
-    final static String  password = "5B4yCdMCv9uHwXL";
-    final static String login = "javaprojectlaba";
-//final static String  password = "442507dima356148";
-//    final static String from = "kevinche75@gmail.com";
+    final static String  password = "";
+    final static String login = "";
     final static String host = "smtp.rambler.ru";
     final static String port = "465";
     final static String from = "javaprojectlaba@rambler.ru";
