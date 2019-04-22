@@ -6,8 +6,8 @@ public class SQLWorker {
 
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/lab7";
     private static final String DB_Driver = "org.postgresql.Driver";
-    private static final String USER = "postgres";
-    private static final String PASS = "sa";
+    private static final String USER = "";
+    private static final String PASS = "";
     private Connection connection;
 
     public  SQLWorker() throws ClassNotFoundException, SQLException {
