@@ -3,6 +3,8 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.concurrent.CopyOnWriteArrayList;
+import com.lambdaworks.codec.Base64;
+import com.lambdaworks.crypto.SCrypt;
 
 public class Executor extends Thread {
 
@@ -118,7 +120,7 @@ public Executor(SenderMails senderMails, DatagramPacket packet, SQLWorker collec
                 break;
             case "login":
                 Pair<String, String> pair = (Pair<String, String>) message.getArgument();
-                if(collection.checkLoginAndPassword(pair.getKey(), pair.getValue())){
+                if(collection.checkLoginAndPassword(pair.getKey(), getHash(pair.getValue()))){
                     int token = tokenFactory.addToken(pair.getKey(), packet.getAddress(), packet.getPort());
                     if(token<0){
                         sendMessage(new ServerMessage("===\nМаксимальное количество пользователей на сервере", "MAX_NUMBER"));
@@ -135,7 +137,7 @@ public Executor(SenderMails senderMails, DatagramPacket packet, SQLWorker collec
                     sendMessage(new ServerMessage("===\nТакой пользователь уже существует", "FALSE_REGISTER_LOGIN"));
                     return;
                 }
-                int token = registrationTokenFactory.addToken(registration.getKey(), registration.getValue());
+                int token = registrationTokenFactory.addToken(registration.getKey(), getHash(registration.getValue()));
                 if(token>0){
                     if(senderMails.sendMessage(registration.getKey(), token)==null){
                         sendMessage(new ServerMessage("===\nНеправильный формат логина", "FALSE_REGISTER_LOGIN"));
@@ -155,7 +157,7 @@ public Executor(SenderMails senderMails, DatagramPacket packet, SQLWorker collec
                         sendMessage(new ServerMessage("===\nНеправильно указан уникальный код", "FALSE_REGISTRATION"));
                         return;
                     } else {
-                        collection.createUser(forlogin.getKey(), forlogin.getValue());
+                        collection.createUser(forlogin.getKey(), getHash(forlogin.getValue()));
                         sendMessage(new ServerMessage("===\nВы успешно зарегистрированы", "TRUE_REGISTRATION"));
                         return;
                     }
@@ -177,6 +179,15 @@ public Executor(SenderMails senderMails, DatagramPacket packet, SQLWorker collec
             System.out.println("Отправлено");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static String getHash(String pass) {
+        try {
+            byte[] derived = SCrypt.scrypt(pass.getBytes(), "salt".getBytes(), 16, 16, 16, 32);
+            return new String(Base64.encode(derived));
+        } catch (Exception e) {
+            return null;
         }
     }
 }

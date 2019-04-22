@@ -36,6 +36,7 @@ public class TokenFactory {
         if(numberOfUsers.get() > 4) return -1;
         if(tokens.entrySet().stream().anyMatch((v)->v.getValue().login.equals(login))) return 0;
         int token = createToken();
+        sendToEvery("===\nЗашёл пользователь: " + login, "ADD_USER");
         tokens.put(token, new SubToken(login, address, port));
         numberOfUsers.incrementAndGet();
         return token;
