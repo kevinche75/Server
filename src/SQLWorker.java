@@ -6,8 +6,8 @@ public class SQLWorker {
 
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/lab7";
     private static final String DB_Driver = "org.postgresql.Driver";
-    private static final String USER = "postgres";
-    private static final String PASS = "sa";
+    private static final String USER = "";
+    private static final String PASS = "";
     private Connection connection;
 
     public  SQLWorker() throws ClassNotFoundException, SQLException {
@@ -15,18 +15,6 @@ public class SQLWorker {
             Class.forName(DB_Driver);
             System.out.println("PostgreSQL JDBC Driver successfully connected");
         connection = DriverManager.getConnection(DB_URL, USER, PASS);
-//            ResultSet rs = statement.executeQuery("select * FROM main.collection");
-//            //ResultSet получает результирующую таблицу
-//            int x = rs.getMetaData().getColumnCount();
-//          //  Resultset.getMetaData() получаем информацию
-//         //результирующей таблице
-//        System.out.println(x);
-//           while(rs.next()){
-//                for(int i=1; i<=x;i++){
-//                    System.out.print(rs.getString(i));
-//                }
-//                System.out.println();
-//            }
     }
 
     public  boolean checkLoginAndPassword(String login, String password){
